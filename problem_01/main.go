@@ -1,28 +1,14 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
-func Compare(a, b string) string {
-	lenA := len(a);
-	result := "";
-
-	for i := 0; i <= lenA; i++{
-		for j := i+ 1; j <= lenA; j++{
-			substr := a[i:j]
-
-			if strings.Contains(b, substr) && len(substr) > len(result) {
-				result = string(substr)
-			}
-		}
-	}
-
-	return result;
+func swap(a, b *int) {
+	*a, *b = *b, *a
 }
 
 func main() {
-	fmt.Println(Compare("KANGORO", "KANG"))
-	fmt.Println(Compare("WANG", "WANGI"))
+	a := 10
+	b := 20
+	swap(&a, &b)
+	fmt.Println(a, b)
 }
