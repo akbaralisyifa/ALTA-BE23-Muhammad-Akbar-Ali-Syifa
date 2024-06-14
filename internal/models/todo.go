@@ -33,41 +33,39 @@ func (tm *TodoModel) AddTodo(newData Todo)(Todo, error){
 	return newData, nil;
 }
 
-func (tm *TodoModel) UpdateTodo(ID uint, updatedData map[string]interface{})(Todo, error){
-	var todo Todo;
-
-	result := tm.db.Model(&todo).Where("ID = ?", ID).Updates(updatedData);
-	
-	if result.Error != nil {
-		return Todo{}, result.Error
-	}
-
-	tm.db.First(&todo, ID)
-
-	return todo, nil;
+func (tm *TodoModel) UpdateTodo(userID, todoID uint)(error){
+	query := tm.db.Model(&Todo{}).Where("ID = ? AND owner = ?", userID, todoID).Update("mark", true);
+	return query.Error;
 }
 
-func (tm *TodoModel) DeleteTodo(ID uint)(Todo, error){
+func (tm *TodoModel) DeleteTodo(deleteTodo Todo)(Todo, error){
 	
-	var todo Todo;
-	result := tm.db.Where("ID = ?", ID).Delete(&todo);
+	// query := ` UPDATE "be24"."todos" SET "deleted_at"= ?
+	// WHERE (owner = ? AND activity = ?) AND "todos"."deleted_at" IS NULL `
+	// err := tm.db.Exec(query, &deleteData.UpdatedAt, &deleteData.Owner, &deleteData.Activity).Error
+	query := tm.db.Delete(&deleteTodo);
 
-	if result.Error != nil {
-		return Todo{}, result.Error;
+	// mengecek klo ada error
+	if query.Error != nil {
+		return Todo{}, query.Error;
+	}
+	// mengecek kalo id yang di hapus di database nya itu tidak ada
+	if query.RowsAffected < 1 {
+		return Todo{}, gorm.ErrRecordNotFound;
 	}
 
-	return todo, nil;
+	return deleteTodo, nil;
 }
 
-func (tm *TodoModel)GetTodo()([]Todo, error){
+func (tm *TodoModel)FindTodo(owner uint)([]Todo, error){
 	var todos []Todo;
 
-	result := tm.db.Find(&todos);
+	query := tm.db.Where("owner = ?", owner).Find(&todos);
 
-	if result.Error != nil {
-		return nil, result.Error
+	if query.Error != nil {
+		return nil, query.Error
 	}
 
-	return todos, nil;
+	return todos, nil 
 
 }

@@ -15,7 +15,7 @@ func main() {
 		fmt.Println("s Conenncting to database", err.Error())
 		return
 	};
-	connection.AutoMigrate(&models.User{}, &models.Todo{});
+	// connection.AutoMigrate(&models.User{}, &models.Todo{});
 
 	userModel := models.NewUserModel(connection);
 	userController := controller.NewUserController(userModel);
@@ -49,17 +49,40 @@ func main() {
 				fmt.Println("3. Delete Todo")
 				fmt.Println("4. View Todo")
 				fmt.Println("9. Exit Todo")
+				fmt.Print("input Todo")
+				fmt.Scanln(&inputTodo)
 
 				if inputTodo == 9 {
 					isLogin = false;
 				}else if inputTodo == 1{
-					todoController.AddTodo(data.ID);
+					_, err := todoController.AddTodo(data.ID);
+					if err != nil {
+						fmt.Println("Failed to add todo", err);
+						return
+					}
+					fmt.Println("Success Add todo")
+
 				}else if inputTodo == 2 {
-					todoController.UpdateTodo(data.ID);
+					_, err := todoController.UpdateTodo(data.ID);
+					if err != nil {
+						fmt.Println("Failed to update todo", err.Error())
+						return
+					}
+					fmt.Println("Success update todo.")
+
 				}else if inputTodo == 3 {
-					todoController.DeleteTodo(data.ID)
+					_, err := todoController.DeleteTodo(data.ID);
+					if err != nil {
+						fmt.Println("Failed To Delete Todo");
+					}
 				}else if inputTodo == 4 {
-					todoController.GetTodo();
+					data, err := todoController.FindTodos(data.ID);
+					if err != nil {
+						fmt.Println("Failed to find todos");
+						return
+					}
+					fmt.Println("Success to find todos")
+					fmt.Println(data)
 				}
 			}
 

@@ -31,42 +31,53 @@ func (tc *TodoController) AddTodo(id uint) (bool, error) {
 };
 
 func (tc *TodoController) UpdateTodo(ID uint) (bool, error){
-	var updateData map[string]interface{};
-	updateData = make(map[string]interface{});
+	var todoID uint
 
-	var mark bool
-	fmt.Print("Set Mark :");
-	fmt.Scanln(&mark);
-	updateData["mark"] = mark;
+	fmt.Println("UPDATE TODO");
+	fmt.Println("Input '0' jika ingin batal");
+	fmt.Println("Input ID kegiatan yang ingin di update !");
+	fmt.Scanln(&todoID);
 
-	_, err := tc.model.UpdateTodo(ID, updateData);
-
-	if err != nil {
-		return false, err
+	if todoID != 0 {
+		return true, nil
 	}
 
-	return true, nil;
+	return false, nil;
 }
 
-func (tc *TodoController) DeleteTodo(ID uint)(bool, error){
-	
-	fmt.Println("Are you sure to Delete ?");
-	_, err := tc.model.DeleteTodo(ID);
+func (tc *TodoController) DeleteTodo(id uint)(bool, error){
+	var deleteData models.Todo;
 
-	if err != nil{
+	fmt.Println("input id aktivitas yang ingin di hapus");
+	fmt.Scanln(&deleteData.ID);
+
+	deleteData.Owner = id;
+	_, err := tc.model.DeleteTodo(deleteData)
+
+	if err != nil {
 		return false, err;
-	}
+	} 
 
 	return true, nil
 }	
 
-func (tc *TodoController) GetTodo() ([]models.Todo, error){
-	todos, err := tc.model.GetTodo();
-
+func (tc *TodoController) FindTodos(ID uint) ([]map[string]any, error){
+	
+	var result []map[string]any;
+	data, err := tc.model.FindTodo(ID);
+	
 	if err != nil {
-		return nil, err;
+		return nil, err
+		}
+		
+	for _, todo := range data {
+		todoMap := map[string]any{
+			"id"		:todo.ID,
+			"activity"	:todo.Activity,
+			"owner"		:todo.Owner,
+		}
+		result = append(result, todoMap)
 	}
-
-	return todos, nil
+	return result, nil
 }
 
