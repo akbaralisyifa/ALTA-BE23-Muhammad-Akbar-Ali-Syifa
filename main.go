@@ -27,4 +27,5 @@ func main() {
 	e.PUT("/todos/:userID/:id", tc.UpdateTodos);
 	e.DELETE("/todos/:userID/:id", tc.DeleteTodos);
 	
+	e.Start(":8000")
 }
