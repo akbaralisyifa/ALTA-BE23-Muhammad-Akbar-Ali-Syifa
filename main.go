@@ -3,6 +3,7 @@ package main
 import (
 	"todos/config"
 	"todos/internal/controllers"
+	"todos/internal/controllers/users"
 	"todos/internal/models"
 
 	"github.com/labstack/echo/v4"
@@ -15,7 +16,7 @@ func main() {
 
 	// connect.AutoMigrate(&models.Users{}, &models.Todos{})
 	um := models.NewUserModels(connect);
-	uc := controllers.NewUserController(um)
+	uc := users.NewUserController(um)
 
 	tm := models.NewTodosModel(connect);
 	tc := controllers.NewTodosControllers(tm)

@@ -1,4 +1,4 @@
-package controllers
+package users
 
 import (
 	"todos/internal/helpers"
@@ -37,7 +37,9 @@ func(uc *UsersControllers) Register(c echo.Context) error {
 }
 
 func (uc *UsersControllers) Login(c echo.Context) error {
-	var input models.Users;
+	// ketika login -> gunakan pake struct login request yang di buat dari pada gunakan model users;
+	// untuk menghemat tabel 
+	var input LoginRequest;
 	err := c.Bind(&input);
 
 	if err != nil {
@@ -50,5 +52,5 @@ func (uc *UsersControllers) Login(c echo.Context) error {
 		return c.JSON(500, helpers.ResponseFormat(500, "Server Error", nil))
 	}
 
-	return c.JSON(201, helpers.ResponseFormat(201, "success login", result));
+	return c.JSON(201, helpers.ResponseFormat(201, "success login", ToLoginResponse(result)));
 }
