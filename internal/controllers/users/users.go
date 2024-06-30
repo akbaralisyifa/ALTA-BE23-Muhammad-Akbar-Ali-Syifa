@@ -3,6 +3,7 @@ package users
 import (
 	"todos/internal/helpers"
 	"todos/internal/models"
+	"todos/internal/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -46,11 +47,19 @@ func (uc *UsersControllers) Login(c echo.Context) error {
 		return c.JSON(400, helpers.ResponseFormat(400, "input failed", nil));
 	}
 
+	// data yang di input kan
 	result, err := uc.model.Login(input.Email, input.Password);
 
 	if err != nil {
 		return c.JSON(500, helpers.ResponseFormat(500, "Server Error", nil))
 	}
 
-	return c.JSON(201, helpers.ResponseFormat(201, "success login", ToLoginResponse(result)));
+	// generet token
+	token, err := utils.GenereteToken(result.ID);
+
+	if err != nil {
+		return c.JSON(500, helpers.ResponseFormat(500, "privacy error", nil))
+	}
+
+	return c.JSON(201, helpers.ResponseFormat(201, "success login", ToLoginResponse(result, token)));
 }

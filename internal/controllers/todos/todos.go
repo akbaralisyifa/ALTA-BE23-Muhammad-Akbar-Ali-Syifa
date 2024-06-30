@@ -1,10 +1,12 @@
-package controllers
+package todos
 
 import (
 	"strconv"
 	"todos/internal/helpers"
 	"todos/internal/models"
+	"todos/internal/utils"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,38 +23,33 @@ func NewTodosControllers(m *models.TodosModel) *TodosControllers {
 
 // CREATE TODOS
 func(tc *TodosControllers) CreateTodos(c echo.Context) error {
-	var input models.Todos;
+
+	// mendapatkan user ID dari token jwt
+	var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
+
+	// requeste todo
+	var input TodosRequest;
 	err := c.Bind(&input);
 
 	if err != nil {
 		return c.JSON(400, helpers.ResponseFormat(400, "input failed", nil));
 	}
 
-	userID, err := strconv.Atoi(c.Param("UserID"))
-
-	if err != nil {
-		c.JSON(400, helpers.ResponseFormat(400, "Invalid User ID", nil));
-	}
-
-	err = tc.model.CreateTodos(uint(userID), input);
+	err = tc.model.CreateTodos(ToRequestModelTodo(input, userID));
 
 	if err != nil {
 		return c.JSON(500, helpers.ResponseFormat(500, "error server", nil))
-	 }
+	}
 
 	return c.JSON(201, helpers.ResponseFormat(201, "success create todo", nil));
 }
 
 // GET TODOS
 func(tc *TodosControllers) GetTodos(c echo.Context) error {
-	
-	userID, err := strconv.Atoi(c.Param("UserID"));
+	// get id from token
+	var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
 
-	if err != nil {
-		return c.JSON(400, helpers.ResponseFormat(400, "user id failed", nil))
-	}
-
-	result, err := tc.model.GetTodos(uint(userID));
+	result, err := tc.model.GetTodos(userID);
 
 	if len(result) == 0 {
 		return c.JSON(400, helpers.ResponseFormat(400, "data empty", nil))
@@ -67,18 +64,21 @@ func(tc *TodosControllers) GetTodos(c echo.Context) error {
 
 // BAGIAN UPDATE TODOS
 func(tc *TodosControllers) UpdateTodos(c echo.Context) error {
-	var input models.Todos
+	// get id from token
+	var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
 
-	err := c.Bind(input.Status);
+	var input TodoUpdateRequeste;
+	err := c.Bind(&input);
 
 	if err != nil {
 		return c.JSON(400, helpers.ResponseFormat(400, "input failed", nil))
 	}
 
-	userID, _ := strconv.Atoi(c.Param("UserID"));
-	id, _ := strconv.Atoi(c.Param("id"));
+	// mendapatkan parameter dari url
+	paramId := c.Param("id");
+	id, _ := strconv.Atoi(paramId)
 
-	err = tc.model.UpdateTodos(uint(userID), uint(id), input.Status);
+	err = tc.model.UpdateTodos(userID, uint(id), input.Status);
 
 	if err != nil {
 		return c.JSON(500, helpers.ResponseFormat(500, "server error", nil))
@@ -90,20 +90,13 @@ func(tc *TodosControllers) UpdateTodos(c echo.Context) error {
 // DELETE TODOS
 func (tc *TodosControllers) DeleteTodos(c echo.Context) error {
 
-	userID, err := strconv.Atoi(c.Param("UserID"));
+	// get id from token
+	var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
+	// get param
+	ParamId := c.Param("id");
+	id, _ := strconv.Atoi(ParamId)
 
-	if err != nil {
-		c.JSON(400, helpers.ResponseFormat(400, "user id failed", nil))
-	}
-	
-	id, err := strconv.Atoi(c.Param("id"));
-	
-	if err != nil {
-		c.JSON(400, helpers.ResponseFormat(400, "user id failed", nil))
-	}
-
-
-	err = tc.model.DeleteTodos(uint(userID), uint(id));
+	err := tc.model.DeleteTodos(userID, uint(id));
 
 	if err != nil {
 		return c.JSON(500, helpers.ResponseFormat(500, "server error", nil))
