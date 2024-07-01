@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -8,6 +9,7 @@ import (
 
 // buat fungsi untuk generete token nya
 func GenereteToken(userID uint)(string, error){ // yang di kembalikan string acak nya
+	SecrateJWT := os.Getenv("SECRATE_JWT")
 	var claims = jwt.MapClaims{}; // untuk menyimpan data2 yang akan di save di jwt
 	
 	claims["id"] = userID;	// untuk menyimpan id nya
@@ -16,7 +18,7 @@ func GenereteToken(userID uint)(string, error){ // yang di kembalikan string aca
 
 	var process = jwt.NewWithClaims(jwt.SigningMethodHS256, claims);
 
-	result, err := process.SignedString([]byte("passkeyJWT")); // signed -> set string key nya
+	result, err := process.SignedString([]byte(SecrateJWT)); // signed -> set string key nya
 
 	if err != nil {
 		return "", err

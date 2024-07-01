@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"todos/config"
 	"todos/internal/controllers/todos"
 	"todos/internal/controllers/users"
@@ -13,6 +14,7 @@ import (
 )
 
 func main() {
+	SecrateJWT := os.Getenv("SECRATE_JWT")
 	e := echo.New() // initial echo
 	setup := config.ImportSetting();
 	connect, _ := config.ConnectDB(setup);
@@ -31,7 +33,7 @@ func main() {
 	t := e.Group("/todos");
 	t.Use(echojwt.WithConfig(
 		echojwt.Config{
-			SigningKey: []byte("passkeyJWT"), // signing -> menggunakan key nya
+			SigningKey: []byte(SecrateJWT), // signing -> menggunakan key nya
 			SigningMethod: jwt.SigningMethodHS256.Name,
 		},
 	))
