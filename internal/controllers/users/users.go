@@ -28,6 +28,14 @@ func(uc *UsersControllers) Register(c echo.Context) error {
 		return c.JSON(400, helpers.ResponseFormat(400, "input failed", nil));
 	}
 
+	processPw, err := utils.GeneretePassword(input.Password)
+
+	if err != nil {
+		return c.JSON(400, helpers.ResponseFormat(400, "password wrong", nil));
+	}
+
+	input.Password = string(processPw)
+
 	// mengecek ketika input nya sudah di isi namun tidak tersimpan ke server
 	_, err = uc.model.Register(input);
 	if err != nil {
@@ -48,10 +56,17 @@ func (uc *UsersControllers) Login(c echo.Context) error {
 	}
 
 	// data yang di input kan
-	result, err := uc.model.Login(input.Email, input.Password);
+	result, err := uc.model.Login(input.Email);
 
 	if err != nil {
 		return c.JSON(500, helpers.ResponseFormat(500, "Server Error", nil))
+	}
+
+	// cek password
+	err = utils.CheckPassword([]byte(input.Password), []byte(result.Password));
+
+	if err != nil {
+		return c.JSON(400, helpers.ResponseFormat(400, "password wrong", nil))
 	}
 
 	// generet token

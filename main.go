@@ -4,7 +4,9 @@ import (
 	"os"
 	"todos/config"
 	"todos/internal/controllers/todos"
-	"todos/internal/controllers/users"
+	"todos/internal/features/users/handler"
+	"todos/internal/features/users/repository"
+	"todos/internal/features/users/service"
 	"todos/internal/models"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -19,15 +21,16 @@ func main() {
 	setup := config.ImportSetting();
 	connect, _ := config.ConnectDB(setup);
 
-	connect.AutoMigrate(&models.Users{}, &models.Todos{})
-	um := models.NewUserModels(connect);
-	uc := users.NewUserController(um)
+	// connect.AutoMigrate(&models.Users{}, &models.Todos{})
+	um := repository.NewUserModel(connect);
+	us := service.NewUserServices(um);
+	uc := handler.NewUserController(us)
 
 	tm := models.NewTodosModel(connect);
 	tc := todos.NewTodosControllers(tm)
 
-	e.POST("/register", uc.Register);
-	e.POST("/login", uc.Login);
+	e.POST("/register", uc.Register());
+	e.POST("/login", uc.Login());
 
 	// agar persingkat
 	t := e.Group("/todos");

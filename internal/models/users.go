@@ -31,10 +31,10 @@ func (um *UserModels) Register(newUser Users)(bool, error){
 	return true, nil;
 }
 
-func (um *UserModels) Login(email string, password string)(Users, error){
+func (um *UserModels) Login(email string)(Users, error){
 	var result Users;
 
-	err := um.db.Where("email = ? AND password = ?", email, password).First(&result).Error;
+	err := um.db.Where("email = ?", email).First(&result).Error;
 
 	if err != nil {
 		return Users{}, err
