@@ -3,6 +3,8 @@ package main
 import (
 	"os"
 	"todos/config"
+	handlerTodo "todos/internal/features/todos/handler"
+	repositoryTodo "todos/internal/features/todos/repository"
 	"todos/internal/features/todos/services"
 	"todos/internal/features/users/handler"
 	"todos/internal/features/users/repository"
@@ -25,9 +27,9 @@ func main() {
 	us := service.NewUserServices(um);
 	uc := handler.NewUserController(us)
 
-	tm := repository.NewTodoModel(connect)
+	tm := repositoryTodo.NewTodoModel(connect)
 	ts := services.NewTodoSevices(tm)
-	tc := handler.NewTodosControllers(ts)
+	tc := handlerTodo.NewTodosControllers(ts)
 
 	e.POST("/register", uc.Register());
 	e.POST("/login", uc.Login());
