@@ -1,6 +1,8 @@
-package todos
+package handler
 
-import "todos/internal/models"
+import (
+	"todos/internal/features/todos"
+)
 
 // membuat requeste yang di perlukan
 type TodosRequest struct{
@@ -14,8 +16,8 @@ type TodoUpdateRequeste struct {
 }
 
 // fungsi request nya
-func ToRequestModelTodo(tr TodosRequest, userID uint) models.Todos {
-	return models.Todos{
+func ToRequestModelTodo(tr TodosRequest, userID uint) todos.Todo {
+	return todos.Todo{
 		UserID: userID,
 		Title: tr.Title,
 		Description: tr.Description,

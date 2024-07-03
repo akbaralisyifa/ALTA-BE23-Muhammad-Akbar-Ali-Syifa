@@ -3,11 +3,10 @@ package main
 import (
 	"os"
 	"todos/config"
-	"todos/internal/controllers/todos"
+	"todos/internal/features/todos/services"
 	"todos/internal/features/users/handler"
 	"todos/internal/features/users/repository"
 	"todos/internal/features/users/service"
-	"todos/internal/models"
 
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -26,8 +25,9 @@ func main() {
 	us := service.NewUserServices(um);
 	uc := handler.NewUserController(us)
 
-	tm := models.NewTodosModel(connect);
-	tc := todos.NewTodosControllers(tm)
+	tm := repository.NewTodoModel(connect)
+	ts := services.NewTodoSevices(tm)
+	tc := handler.NewTodosControllers(ts)
 
 	e.POST("/register", uc.Register());
 	e.POST("/login", uc.Login());
