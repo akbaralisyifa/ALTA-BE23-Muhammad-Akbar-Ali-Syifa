@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"todos/internal/features/todos/repository"
 	"todos/internal/features/users"
 
 	"gorm.io/gorm"
@@ -13,7 +14,7 @@ type Users struct {
 	Email    string  `json:"email"`
 	Password string  `json:"password"`
 	Phone    string  `json:"hp"`
-	// Todos    []Todos `gorm:"foreignKey:UserID"`
+	Todos    []repository.Todos `gorm:"foreignKey:UserID"`
 }
 
 func(u *Users) toUserEntity() users.User {

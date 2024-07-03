@@ -28,7 +28,8 @@ func (um *UserModel) Login(email string) (users.User, error){
 }
 
 func (um *UserModel) Register(newUser users.User)(error){
-	err := um.db.Create(&newUser).Error;
+	cnvt := toUserData(newUser)
+	err := um.db.Create(&cnvt).Error;
 
 	return err;
 }

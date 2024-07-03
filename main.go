@@ -22,7 +22,7 @@ func main() {
 	setup := config.ImportSetting();
 	connect, _ := config.ConnectDB(setup);
 
-	// connect.AutoMigrate(&models.Users{}, &models.Todos{})
+	connect.AutoMigrate(&repository.Users{}, &repositoryTodo.Todos{})
 	um := repository.NewUserModel(connect);
 	us := service.NewUserServices(um);
 	uc := handler.NewUserController(us)
@@ -42,10 +42,10 @@ func main() {
 			SigningMethod: jwt.SigningMethodHS256.Name,
 		},
 	))
-	t.POST("", tc.CreateTodos);
-	t.GET("", tc.GetTodos);
-	t.PUT("/:id", tc.UpdateTodos);
-	t.DELETE("/:id", tc.DeleteTodos);
+	t.POST("", tc.CreateTodos());
+	t.GET("", tc.GetTodos());
+	t.PUT("/:id", tc.UpdateTodos());
+	t.DELETE("/:id", tc.DeleteTodos());
 
 	e.Pre(middleware.RemoveTrailingSlash()) // (wajib -> digunakan sebelum menthod nya di akses) => untuk menghapus slash yang berlebih di akhir endpoint
 	e.Use(middleware.Logger()) // (wajib -> di gunakan setelah method nya di akses) digunakan untuk memunculkan console.log di terminal ketika sebuah end point di akses

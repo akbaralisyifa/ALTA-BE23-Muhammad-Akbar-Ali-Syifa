@@ -24,6 +24,7 @@ func(uc *UsersControllers) Register() echo.HandlerFunc{
 		err := c.Bind(&input);
 	
 		if err != nil {
+			c.Logger().Error("Register Error", err.Error())
 			return c.JSON(400, helpers.ResponseFormat(400, "input failed", nil));
 		}
 	
