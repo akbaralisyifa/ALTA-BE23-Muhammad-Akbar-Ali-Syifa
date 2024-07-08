@@ -9,7 +9,7 @@ type TodoService struct {
 func NewTodoSevices(q todos.Query) todos.Services{
 	return &TodoService{
 		qry: q,
-	}
+	}  
 }
 
 func (ts *TodoService) CreateTodos(newTodo todos.Todo)(error){

@@ -17,7 +17,8 @@ func NewTodoModel(connection *gorm.DB) todos.Query{
 }
 
 func (tm *TodoModel) CreateTodos(newTodo todos.Todo)(error){
-	err := tm.db.Create(&newTodo).Error;
+	cvrData := ToTodoData(newTodo)
+	err := tm.db.Create(&cvrData).Error;
 	return err;
 }
 

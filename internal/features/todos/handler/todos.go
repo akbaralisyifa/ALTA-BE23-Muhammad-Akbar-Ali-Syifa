@@ -57,7 +57,7 @@ func (tc *TodosControllers) GetTodos() echo.HandlerFunc{
 			return c.JSON(500, helpers.ResponseFormat(500, "server error", nil))
 		}
 
-		return c.JSON(200, helpers.ResponseFormat(200, "success", result))
+		return c.JSON(200, helpers.ResponseFormat(200, "success", ToResponseGetTodo(result)))
 	}
 }
 
