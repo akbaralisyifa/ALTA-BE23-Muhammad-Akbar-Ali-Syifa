@@ -8,10 +8,10 @@ import (
 
 type Todos struct {
 	gorm.Model
-	UserID      uint   `json:"user_id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      bool   `json:"status"`
+	UserID      uint   
+	Title       string 
+	Description string 
+	Status      bool  
 };
 
 func (t *Todos) ToTodosEntity() todos.Todo{
@@ -24,7 +24,7 @@ func (t *Todos) ToTodosEntity() todos.Todo{
 	}
 }
 
-func toTodoData(input todos.Todo) Todos {
+func ToTodoData(input todos.Todo) Todos {
 	return Todos{
 		UserID: input.UserID,
 		Title: input.Title,
