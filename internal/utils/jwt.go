@@ -7,8 +7,19 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+type JwtUtilityInterface interface{
+	GenereteToken(userID uint)(string, error)
+	DecodeToken(token *jwt.Token) uint
+}
+
+type jwtUtility struct{}
+
+func NewJwtUtility() JwtUtilityInterface {
+	return &jwtUtility{}
+}
+
 // buat fungsi untuk generete token nya
-func GenereteToken(userID uint)(string, error){ // yang di kembalikan string acak nya
+func (j *jwtUtility) GenereteToken(userID uint)(string, error){ // yang di kembalikan string acak nya
 	SecrateJWT := os.Getenv("SECRATE_JWT")
 	var claims = jwt.MapClaims{}; // untuk menyimpan data2 yang akan di save di jwt
 	
@@ -28,7 +39,7 @@ func GenereteToken(userID uint)(string, error){ // yang di kembalikan string aca
 }
 
 // membuat fungsi jwt agar lebih optimal
-func DecodeToken(token *jwt.Token) uint {
+func (j *jwtUtility) DecodeToken(token *jwt.Token) uint {
 	var claims = token.Claims.(jwt.MapClaims);
 	var userID = claims["id"].(float64);
 	return	uint(userID)

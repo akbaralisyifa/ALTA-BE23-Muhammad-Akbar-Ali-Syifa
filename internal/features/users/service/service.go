@@ -7,16 +7,29 @@ import (
 
 type UserServices struct {
 	qry users.Query
+	jwt utils.JwtUtilityInterface
+	vldt utils.ValidateUtilityInterface
+	pw utils.GeneretePasswordInterface
 }
 
-func NewUserServices(m users.Query) users.Services {
+func NewUserServices(m users.Query, v utils.ValidateUtilityInterface, j utils.JwtUtilityInterface, p utils.GeneretePasswordInterface) users.Services {
 	return &UserServices{
 		qry: m,
+		vldt: v,
+		jwt: j,
+		pw : p,
 	}
 }
 
 func (us *UserServices) Register(newData users.User)(error){
-	processPw, err := utils.GeneretePassword(newData.Password);
+
+	err := us.vldt.RegisterValidator(newData.Username, newData.Email, newData.Password)
+
+	if err != nil {
+		return err;
+	}
+
+	processPw, err := us.pw.GeneretePassword(newData.Password)
 
 	if err != nil {
 		return err;
@@ -35,6 +48,12 @@ func (us *UserServices) Register(newData users.User)(error){
 
 func (us *UserServices) Login(email string, password string)(users.User, string, error){
 
+	err := us.vldt.LoginValidator(email, password)
+
+	if err != nil {
+		return users.User{}, "", err;
+	}
+
 	// data yang di input kan
 	result, err := us.qry.Login(email);
 
@@ -50,7 +69,7 @@ func (us *UserServices) Login(email string, password string)(users.User, string,
 	}
 
 	// generet token
-	token, err := utils.GenereteToken(result.ID);
+	token, err := us.jwt.GenereteToken(result.ID)
 
 	if err != nil {
 		return users.User{}, "", err

@@ -12,11 +12,13 @@ import (
 
 type TodosControllers struct {
 	srv todos.Services
+	dcJwt utils.JwtUtilityInterface
 }
 
-func NewTodosControllers(s todos.Services) todos.Hendler {
+func NewTodosControllers(s todos.Services, j utils.JwtUtilityInterface) todos.Hendler {
 	return &TodosControllers{
 		srv: s,
+		dcJwt: j,
 	}
 }
 
@@ -24,7 +26,7 @@ func NewTodosControllers(s todos.Services) todos.Hendler {
 func (tc *TodosControllers) CreateTodos() echo.HandlerFunc{
 	return func(c echo.Context) error {
 		// mendapatkan user ID dari token jwt
-		var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
+		var userID = tc.dcJwt.DecodeToken(c.Get("user").(*jwt.Token))
 	
 		// requeste todo
 		var input TodosRequest
@@ -49,7 +51,7 @@ func (tc *TodosControllers) CreateTodos() echo.HandlerFunc{
 func (tc *TodosControllers) GetTodos() echo.HandlerFunc{
 	return func(c echo.Context) error {
 	// get id from token
-		var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
+		var userID = tc.dcJwt.DecodeToken(c.Get("user").(*jwt.Token))
 
 		result, err := tc.srv.GetTodos(userID)
 
@@ -65,7 +67,7 @@ func (tc *TodosControllers) GetTodos() echo.HandlerFunc{
 func (tc *TodosControllers) UpdateTodos() echo.HandlerFunc{
 	return func(c echo.Context) error {
 	// get id from token
-		var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
+		var userID = tc.dcJwt.DecodeToken(c.Get("user").(*jwt.Token))
 
 		var input TodoUpdateRequeste
 		err := c.Bind(&input)
@@ -93,7 +95,7 @@ func (tc *TodosControllers) DeleteTodos() echo.HandlerFunc{
 	return func(c echo.Context) error {
 
 		// get id from token
-		var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
+		var userID = tc.dcJwt.DecodeToken(c.Get("user").(*jwt.Token))
 		// get param
 		ParamId := c.Param("id")
 		id, _ := strconv.Atoi(ParamId)

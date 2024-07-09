@@ -25,3 +25,14 @@ type Query interface{
 	Register(newUser User)(error)
 	Login(email string)(User, error)
 }
+
+type RegisterValidate struct {
+	Username string `validate:"required"`
+	Email    string `validate:"required,email"`
+	Password string `validate:"required,min=5,alphanum"`
+}
+
+type LoginValidate struct {
+	Email    string `validate:"required,email"`
+	Password string `validate:"required,min=5,alphanum"`
+}
